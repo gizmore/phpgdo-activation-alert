@@ -10,6 +10,7 @@ use GDO\Register\GDO_UserActivation;
 
 /**
  * Sends a mail when a new user is activated.
+ * 
  * @author gizmore
  * @version 7.0.1
  */
@@ -51,11 +52,17 @@ final class Module_ActivationAlert extends GDO_Module
 	
 	private function sendSingleMail($to, GDO_User $user)
 	{
-		$fakeUser = GDO_User::blank(array(
-			'user_name' => GDO_BOT_NAME,
-			'user_email' => $to,
-		));
-		$this->sendMail($fakeUser, $user, true);
+		$mail = Mail::botMail();
+		$mail->setSubject(tiso(GDO_LANGUAGE, 'mail_subj_user_activated_staff', [sitename()]));
+		$tVars = array(
+			'Admin',
+			sitename(),
+			$user->renderUserName(),
+			GDT_IP::current(),
+		);
+		$mail->setBody(tiso(GDO_LANGUAGE, 'mail_body_user_activated_staff', $tVars));
+		$mail->setReceiver($to);
+		$mail->sendAsHTML();
 	}
 	
 	private function sendMail(GDO_User $admin, GDO_User $user, bool $faked)
@@ -69,11 +76,6 @@ final class Module_ActivationAlert extends GDO_Module
 			GDT_IP::current(),
 		);
 		$mail->setBody(tusr($admin, 'mail_body_user_activated_staff', $tVars));
-		if ($faked)
-		{
-			$mail->setReceiver($admin->gdoVar('user_email'));
-			$mail->sendAsHTML();
-		}
 		$mail->sendToUser($admin);
 	}
 	
