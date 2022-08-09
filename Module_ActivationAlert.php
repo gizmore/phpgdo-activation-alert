@@ -16,7 +16,10 @@ use GDO\Register\GDO_UserActivation;
  */
 final class Module_ActivationAlert extends GDO_Module
 {
-	public function onLoadLanguage() : void { $this->loadLanguage('lang/activation_alert'); }
+	public function onLoadLanguage() : void
+	{
+		$this->loadLanguage('lang/activation_alert');
+	}
 	
 	public function getConfig() : array
 	{
